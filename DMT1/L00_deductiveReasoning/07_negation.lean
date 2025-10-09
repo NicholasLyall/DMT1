@@ -106,7 +106,7 @@ theorem notDistribOverAnd {P Q : Prop} : ¬(P ∧ Q) → (¬P ∨ ¬Q)
   (Or.inl
     (fun (p : P) =>
       (
-        _
+        --not possible because even though I can prove to myself that there can be a true proof of this, I can't logically prove exactly which one is false or which one is true its like shrödinger's cat.
       )
     )
   )
@@ -136,10 +136,18 @@ fun h => match h with
     (
       fun pq =>   -- to prove ¬(P ∧ Q), assume it; then what?
       (
-        _
+          let p := pq.left
+          np p
       )
     )
-  | (Or.inr nq) => _
+  | (Or.inr nq) =>
+    (
+      fun pq =>
+      (
+          let q := pq.right
+          nq q
+      )
+    )
 
 /- @@@
 #3
@@ -157,3 +165,28 @@ need, leaving them as ( _ ), properly indented on
 their own lines. Then fill in the remaining proofs
 as required.
 -/
+
+theorem notDistribOverOr {P Q : Prop} : ¬(P ∨ Q) ↔ (¬P ∧ ¬Q) :=
+  Iff.intro
+    (
+      fun h =>
+        And.intro
+          (
+            fun p =>
+              h (Or.inl p)
+          )
+          (
+            fun q =>
+              h (Or.inr q)
+          )
+    )
+    (
+      fun h =>
+        fun porq =>
+          match porq with
+          | Or.inl p => h.left p
+          | Or.inr q => h.right q
+
+    )
+
+--
