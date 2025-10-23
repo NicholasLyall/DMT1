@@ -33,9 +33,19 @@ notation "¬" P => Not P
 Modus Ponens is the most fundamental rule of logic:If you have: P → Q    (implication)
 And you have: P       (the premise)
 Then you get: Q       (the conclusion)
+
 -/
 
+
+
 /--/
+
+3: curry Howard: Proving P → Q and defining a function P → Q are THE EXACT SAME THING.
+example (pq : P → Q) (p : P) : Q :=
+  pq p  -- Apply the function to the argument --> imp elim
+
+impliesElim →Elim is by definition defining a function
+
 In this logic, if one is given proposition, *P*,
 of unknown truth/validity, there are just two
 cases one ever has to consider: one where *P* is
@@ -56,6 +66,9 @@ now return and read it outloud to yourself.)
 
 ### Constructive
 
+4: Deductive: Premises + logic rules → guaranteed conclusion (e.g., all men mortal, Socrates is man → Socrates mortal).
+Inductive: Observed patterns → probable generalization (e.g., sun rose every day → sun will rise tomorrow).
+Abductive: Observation → best explanation (e.g., grass wet → probably rained).
 Is this axiom of *classical* logic an axiom
 we've met so far in constructive logic? No,
 it's not. It's not among the introduction or
@@ -587,6 +600,32 @@ example { P Q : Prop } : ¬(P ∧ Q) → ¬P ∨ ¬Q :=
       | Or.inr nq => Or.inr nq      -- P true and ¬Q true (easy)
   | Or.inr np => Or.inl np          -- ¬P true (easy, Q irrelevant)
 )
+open Classical
+
+theorem demorgan_reverse {P Q : Prop} : ¬(P ∧ Q) → (¬P ∨ ¬Q) :=
+  fun h =>
+    match em P with
+    | Or.inl p =>           -- Case: P is true
+        match em Q with
+        | Or.inl q =>       -- Sub-case: Q is also true
+            let pq := And.intro p q  -- Make P ∧ Q
+            False.elim (h pq)        -- Contradiction with h!
+        | Or.inr nq =>      -- Sub-case: Q is false
+            Or.inr nq       -- Return ¬Q
+    | Or.inr np =>          -- Case: P is false
+        Or.inl np           -- Return ¬P
+
+
+
+open Classical
+
+theorem emImpliesNotNotP : ∀ (P : Prop), ¬¬P → P :=
+fun P =>
+  fun nnp =>
+    match em P with
+    | Or.inl p => p
+    | Or.inr np => False.elim (nnp np)
+
 
 /- @@@
 #### Excluded Middle Implies Fourth DeMorgan Theorem
