@@ -170,7 +170,26 @@ If you  want classical reasoning, just
 use *Classical.em*. If you *open* the
 *Classical* namespace, you can just write
 *em P*.
+Logical reading: If whenever P is true Q is; and if, in addition, whenever Q is true then R is; then it is necessarily the case that if P is true then R is, too. Be able to prove it in Lean.
 @@@ -/
+
+open Classical
+
+
+axiom dne : ∀ (P : Prop), ¬¬P → P
+
+theorem dne_implies_em (P : Prop) : P ∨ ¬P :=
+  dne (P ∨ ¬P) (
+    fun h =>  -- Assume ¬(P ∨ ¬P), need to derive False
+      -- First, prove ¬P
+      let np : ¬P := fun p =>  -- Assume P, derive False
+        let porp : P ∨ ¬P := Or.inl p  -- Make P ∨ ¬P from P
+        h porp  -- But h says ¬(P ∨ ¬P)! Contradiction → False
+
+      -- Now we have ¬P, so we can make P ∨ ¬P
+      let porp2 : P ∨ ¬P := Or.inr np
+      h porp2  -- But h says ¬(P ∨ ¬P)! Contradiction → False
+  )
 
 #check Classical.em P
 -- a proof of P ∨ ¬P for free!
@@ -627,7 +646,34 @@ fun P =>
     | Or.inr np => False.elim (nnp np)
 
 
+open Classical
+
+theorem dne_exercise {P : Prop} : ¬¬P → P :=
+  fun nnp =>
+    match em P with
+    | Or.inl p => p
+    | Or.inr np => False.elim (nnp np)
+
+
+theorem trans_chain {P Q R S : Prop} : (P → Q) → (Q → R) → (R → S) → (P → S) :=
+  fun pq =>
+    fun qr =>
+      fun rs =>
+        fun p =>
+            rs (qr (pq p))
+
+
+open Classical
+
+theorem challenge {P Q : Prop} : (P → Q) → (¬Q → ¬P) :=
+  fun pq =>
+    fun nq =>
+      fun p =>
+        nq (pq p)
+
 /- @@@
+
+
 #### Excluded Middle Implies Fourth DeMorgan Theorem
 
 Here's a variant of the precising reasoning that's
