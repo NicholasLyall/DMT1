@@ -55,10 +55,10 @@ Uncomment the following code to explore it.
 @@@ -/
 
 -- example { P Q : Prop } : ¬(P ∧ Q) → ¬P ∨ ¬ Q :=
--- (
---   fun (h : ¬(P ∧ Q)) =>
---     Or.inl _
--- )
+--(
+  --fun (h : ¬(P ∧ Q)) =>
+    --Or.inl
+--)
 
 
 /- @@@
@@ -203,8 +203,56 @@ this principle is valid in Lean 4. You won't be
 able to. Understand where you got stuck. Leave
 you incomplete proof commented out with a quick
 comment explaining exactly why you get stuck.
+-/
+example { P : Prop } : ¬¬P → P :=
+  fun (nnp : ¬¬P) =>
+    let nnpFalse : False := nnp _
+    sorry --i got stuck because we dont have a proof of not P or P-> flase
+
+
 
 #2. Provide that if you accept (assume) the axiom
 of the excluded middle, then negation elimination
 is valid.
-@@@ -/
+
+example { P : Prop } : (∀ P : Prop, P ∨ ¬P) → (¬¬P → P) :=
+  fun np nnp =>
+    let pornp := np P
+    match pornp with
+    | Or.inl p => p
+    | Or.inr np => False.elim (nnp np)
+
+
+example : ∀ P, ¬P ↔ P -> False :=
+  fun (P : Prop)=>
+  (
+    Iff.intro
+    (
+      fun np =>
+        fun p =>--******************
+          np p
+    )
+    (
+      fun pimpf => pimpf
+    )
+  )
+
+example : ∀ P, ¬¬P → P :=
+  fun P =>
+    fun nnp =>
+
+example : (∀ P, P ∨ ¬P) → (∀ P, ¬¬P → P) :=
+fun em =>
+(
+  fun P =>
+  (
+    fun nnp =>
+    (
+      let pornp := em P
+      match pornp with
+      | Or.inl p => p
+      | Or.inr np =>  False.elim
+        (nnp np)
+    )
+  )
+)
