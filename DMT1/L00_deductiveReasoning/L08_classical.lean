@@ -12,6 +12,30 @@ proposition) is either true or false. If it's
 one, it's not the other, and it has to be one
 of the two.
 
+1:
+Why this proves P is uninhabited:
+By contradiction logic:
+
+Suppose P were inhabited (had a value p : P)
+Then we could apply our function: not_P p : Fa
+lse But False is uninhabited (has no values)—
+it's impossible to construct! Therefore, P must
+be uninhabited too
+
+In other words: If you can turn any P into False,
+then P can't exist, because False doesn't exist.
+What proposition does this prove?
+P → False is the definition of ¬P (not P).
+lean4 def Not (P : Prop) : Prop := P → False
+notation "¬" P => Not P
+
+2: Modus Ponens
+Modus Ponens is the most fundamental rule of logic:If you have: P → Q    (implication)
+And you have: P       (the premise)
+Then you get: Q       (the conclusion)
+-/
+
+/--/
 In this logic, if one is given proposition, *P*,
 of unknown truth/validity, there are just two
 cases one ever has to consider: one where *P* is
