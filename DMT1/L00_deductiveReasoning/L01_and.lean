@@ -441,8 +441,18 @@ theorem proofAndAssoc : P ∧ (Q ∧ R) ↔ (P ∧ Q) ∧ R :=
     fun
     (h : (P ∧ Q) ∧ R) =>
     (
-      sorry
+      by (
+        let p := h.left.left
+        let q := h.left.right
+        let r := h.right
+        let qr := And.intro q r
+        exact (And.intro p qr)
+      )
     )
   )
+
+
+
+
 
 end DMT1.L00_reasoning

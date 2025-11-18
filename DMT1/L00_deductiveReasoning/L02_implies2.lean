@@ -246,6 +246,7 @@ fun p => p
 From proofs of P → Q and Q → R, we obtain a proof of P → R by composing
 the functions.
 
+
 ````
 Γ ⊢ f : P → Q      Γ ⊢ g : Q → R
 ------------------------------------
@@ -254,6 +255,22 @@ the functions.
 @@@ -/
 
 -- A more verbose, step-by-step construction
+
+fun (pq : P → Q) (qr : Q → R) =>  -- Take two functions
+  fun (p : P) =>                   -- To build P → R, assume we have p : P
+    qr (pq p)                      -- Apply pq to get Q, then qr to get R
+
+
+
+/-
+1. **`pq : P → Q`** — We have a function that turns P into Q
+2. **`qr : Q → R`** — We have a function that turns Q into R
+3. **`p : P`** — We're given a proof/value of P
+4. **`pq p : Q`** — Apply pq to p, get a Q
+5. **`qr (pq p) : R`** — Apply qr to that Q, get an R
+6. **Result**: We've built `P → R` by composing the functions!
+-/
+
 theorem trans
 {P Q R : Prop} : (P → Q) → (Q → R) → (P → R)
 | pq, qr => fun (p : P) =>

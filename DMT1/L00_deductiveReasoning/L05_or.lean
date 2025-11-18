@@ -309,27 +309,58 @@ a longer proof if needed.
 
 -- 1) From P, construct P ∨ Q; from Q, construct P ∨ Q.
 theorem or_intro_left {P Q : Prop} (p : P) : P ∨ Q :=
-  sorry
+  Or.inl p
 
 theorem or_intro_right {P Q : Prop} (q : Q) : P ∨ Q :=
-  sorry
+  Or.inr q
 
 -- 2) From P ∨ Q and P → R and Q → R, derive R.
 theorem or_elim_to {P Q R : Prop}
   (h : P ∨ Q) (f : P → R) (g : Q → R) : R :=
-  sorry
+  Or.elim h f g
+
 
 -- 3) Show False ∨ P ↔ P (hint: two implications).
 theorem false_or_iff {P : Prop} : False ∨ P ↔ P :=
-  sorry
+  Iff.intro
+    (fun h => Or.elim h
+    (
+      fun f => False.elim f
+    )
+    (
+      fun p => p
+    ))
+    (fun p : P => Or.inr p)
 -- Recall False elim: ∀ P : Prop, False → P (ending any proof)
 
 -- 4) Commutativity, again, but as an equivalence.
 theorem or_comm_iff {P Q : Prop} : P ∨ Q ↔ Q ∨ P :=
-  sorry
+  Iff.intro
+  (
+    fun h => Or.elim h
+      (fun p => Or.inr p)
+      (fun q => Or.inl q)
+
+  )
+  (
+    fun h2 => Or.elim h2
+      (fun q => Or.inr q)
+      (fun p => Or.inl p)
+  )
 
 -- 4) Commutativity, again, but as an equivalence.
-theorem or_assoc_iff {P Q R : Prop} : P ∨ Q ∨ R ↔ (P ∨ Q) ∨ P :=
-  sorry
-
+theorem or_assoc_iff {P Q R : Prop} : P ∨ (Q ∨ R) ↔ (P ∨ Q) ∨ R :=
+  Iff.intro
+    (fun h =>
+      Or.elim h
+        (fun p => Or.inl (Or.inl p))
+        (fun qr => Or.elim qr
+          (fun q => Or.inl (Or.inr q))
+          (fun r => Or.inr r)))
+    (fun h =>
+      Or.elim h
+        (fun pq => Or.elim pq
+          (fun p => Or.inl p)
+          (fun q => Or.inr (Or.inl q)))
+        (fun r => Or.inr (Or.inr r)))
 end OrInference
